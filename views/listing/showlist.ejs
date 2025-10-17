@@ -1,0 +1,106 @@
+<% layout("/layouts/boilerplate")-%>
+<script>
+    const mapToken = "<%= process.env.MAP_TOKEN %>";
+    const listing = <%- JSON.stringify(showlist[0])%>;
+</script>
+    <div class="row mt-3">
+        <div class="col-8 offset-3">
+            <h2><%=showlist[0].title%></h2>
+        </div>
+    <div class="card1 col-6 offset-3 show-card">
+        <img src="<%=showlist[0].image.url%>" class="card-img-top show-img" alt="...">
+        <div class="card-body">
+            <p><b>Owned by</b><i>:<%=showlist[0].owner.username %></i></p>
+            <p><b>About</b>:<%=showlist[0].description%></p>
+            <p><b>price</b>:&#8377; <%=showlist[0].price.toLocaleString("en-IN")%></p>
+            <p><b>Location</b>:<%=showlist[0].location%></p>
+            <p><b>Country</b>:<%=showlist[0].country%></p>
+            <p><b>Category</b>: <%=showlist[0].category%></p>
+            <br><br>
+            <%if(currUser && showlist[0].owner._id.equals(currUser._id)){%>
+            <div class="btns">
+                <a href="/listing/<%=showlist[0]._id%>/edit" class="btn btn-dark col-2 offset-3 submit-btn">Edit</a>
+                <form action="/listing/<%=showlist[0]._id%>?_method=DELETE" method="post">
+                    <button class="btn btn-dark offset-3">Delete</button>
+                </form>
+            </div>
+            <%}%>
+        </div>
+    </div>
+    <div class="col-8 offset-3">
+        <% if(currUser){%>
+        <hr>
+        <h4>Leave a Review</h4>
+        <form action="/listing/<%= showlist[0].id %>/reviews" method="POST" class="mb-3 mt-3 needs-validation" novalidate>
+            <!-- <div class="mb-3 mt-3">
+                <label for="rating" class="form-label" >Rating</label>
+                <input type="range" min="1" max="5" id="rating" name="review[rating]" class="form-range">
+            </div> -->
+            <div class="mb-3 mt-3">
+            <label for="rating" class="form-label" >Rating</label>
+            <fieldset class="starability-slot">
+            <input type="radio" id="no-rate" class="input-no-rate" name="review[rating]" value="1" checked aria-label="No rating." />
+            <input type="radio" id="first-rate1" name="review[rating]" value="1" />
+            <label for="first-rate1" title="Terrible">1 star</label>
+            <input type="radio" id="first-rate2" name="review[rating]" value="2" />
+            <label for="first-rate2" title="Not good">2 stars</label>
+            <input type="radio" id="first-rate3" name="review[rating]" value="3" />
+            <label for="first-rate3" title="Average">3 stars</label>
+            <input type="radio" id="first-rate4" name="review[rating]" value="4" />
+            <label for="first-rate4" title="Very good">4 stars</label>
+            <input type="radio" id="first-rate5" name="review[rating]" value="5" />
+            <label for="first-rate5" title="Amazing">5 stars</label>
+            </fieldset>
+            </div>
+            <div class="mb-3 mt-3">
+                <label for="comment" class="form-label">Comments</label>
+                <textarea name="review[comment]" id="comment" cols="30" rows="5" class="form-control" required></textarea>
+                <div class="invalid-feedback">
+                    Please add some comments for Review
+                </div>
+            </div>
+            <button class="btn btn-outline-dark">Submit</button>
+        </form>
+        <%}%>
+        <% if(showlist[0].reviews.length!=0){%>
+        <p><b>All Reviews</b></p>
+        <div class="row">
+        <% for (review of showlist[0].reviews) {%>
+            <div class="review-card col-5 mb-3 ms-3">
+                <div class="card-body">
+                    <h5 class="card-text">@<%= review.author.username %></h5>
+                    <p class="starability-result card-text" data-rating=<%= review.rating%>></p>
+                    <p class="card-text"><%= review.comment%></p>
+                    <!-- <p class="card-text"><%= review.rating%> stars</p> -->
+                    <%if(currUser._id.equals(review.author._id)){%>
+                    <form action="/listing/<%= showlist[0]._id%>/reviews/<%=review._id%>?_method=DELETE"  method="POST" class="mb-3">
+                        <button class="btn btn-sm btn-dark">Delete</button>
+                    </form>
+                    <%}%>
+                </div>
+            </div>
+        <%}%>
+        </div>
+        <%}%>
+    </div>
+    <!-- <div class="col-8 offset-1 mb-3">
+        <h3>Where you'll be</h3>
+        <div id="map"></div>
+    </div>
+<script>
+    let mapToken = "<%= process.env.MAP_TOKEN %>";
+    console.log(mapToken);
+    mapboxgl.accessToken = mapToken;
+    const map = new mapboxgl.Map({
+        container: 'map', // container ID
+        center: [-74.5, 40], // starting position [lng, lat]. Note that lat must be set between -90 and 90
+        zoom: 9 // starting zoom
+    });
+</script> -->
+<hr>
+<div class="col-8 offset-3">
+    <h4>Where you'll be</h4>
+    <div id="map"></div>
+</div>
+
+<script src="/js/map.js"></script>
